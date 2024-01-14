@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #af4545;
+      color: #fff;
+    }
+
+    canvas {
+      border: 2px solid #fff;
+    }
+  </style>
+  <title>Pong Game</title>
+</head>
+<body>
+  <canvas id="pongCanvas" width="800" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById('pongCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Paddle properties
+    const paddleWidth = 10;
+    const paddleHeight = 60;
+    const paddleSpeed = 5;
+
+    // Ball properties
+    const ballSize = 10;
+    let ballX = canvas.width / 2;
+    let ballY = canvas.height / 2;
+    let ballSpeedX = 5;
+    let ballSpeedY = 5;
+
+    // Paddle positions
+    let leftPaddleY = (canvas.height - paddleHeight) / 2;
+    let rightPaddleY = (canvas.height - paddleHeight) / 2;
+
+    // Handle keyboard input
+    let upKeyPressed = false;
+    let downKeyPressed = false;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') {
+        upKeyPressed = true;
+      } else if (e.key === 'ArrowDown') {
+        downKeyPressed = true;
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowUp') {
+        upKeyPressed = false;
+      } else if (e.key === 'ArrowDown') {
+        downKeyPressed = false;
+      }
+    });
+
+    function update() {
+      // Move paddles
+      if (upKeyPressed && leftPaddleY > 0) {
+        leftPaddleY -= paddleSpeed;
+      }
+      if (downKeyPressed && leftPaddleY + paddleHeight < canvas.height) {
+        leftPaddleY += paddleSpeed;
+      }
+
+      // Simple AI for the right paddle
+      const rightPaddleCenter = rightPaddleY + paddleHeight / 2;
+      if (rightPaddleCenter < ballY - 15) {
+        rightPaddleY += paddleSpeed;
+      } else if (rightPaddleCenter > ballY + 15) {
+        rightPaddleY -= paddleSpeed;
+      }
+
+      // Move ball
+      ballX += ballSpeedX;
+      ballY += ballSpeedY;
+
+      // Ball collisions with top and bottom walls
+      if (ballY - ballSize / 2 < 0 || ballY + ballSize / 2 > canvas.height) {
+        ballSpeedY = -ballSpeedY;
+      }
+
+      // Ball collisions with paddles
+      if (
+        (ballX - ballSize / 2 < paddleWidth && ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) ||
+        (ballX + ballSize / 2 > canvas.width - paddleWidth && ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight)
+      ) {
+        ballSpeedX = -ballSpeedX;
+      }
+
+      // Reset ball position if it goes out of bounds
+      if (ballX - ballSize / 2 < 0 || ballX + ballSize / 2 > canvas.width) {
+        ballX = canvas.width / 2;
+        ballY = canvas.height / 2;
+      }
+    }
+
+    function draw() {
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw paddles
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, leftPaddleY, paddleWidth, paddleHeight);
+      ctx.fillRect(canvas.width - paddleWidth, rightPaddleY, paddleWidth, paddleHeight);
+
+      // Draw ball
+      ctx.beginPath();
+      ctx.arc(ballX, ballY, ballSize / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Start the game loop
+    gameLoop();
+  </script>
+</body>
+</html>
+<style>
+    body {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #111;
+      color: #fff;
+      background-image: url('https://www.pexels.com/photo/blue-and-green-sky-and-mountain-3617500/'); /* Replace 'your-random-background-image.jpg' with the actual image file */
+      background-size: cover;
+      background-position: center;
+    }
+  
+    canvas {
+      border: 2px solid #fff;
+    }
+  </style>
+  
+
+
